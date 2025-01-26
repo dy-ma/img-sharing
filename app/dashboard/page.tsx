@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { logout } from "../login/actions";
 import { PhotoSet, columns } from "./columns";
 import { DataTable } from "./datatable";
+import Link from "next/link";
 
 async function getData(): Promise<PhotoSet[]> {
     return [
@@ -41,6 +42,9 @@ export default async function Dashboard() {
 
     return (
         <div className="container mx-auto py-10">
+            <Button asChild>
+                <Link href="/dashboard/upload">Add Set</Link>
+            </Button>
             <DataTable columns={columns} data={data}/>
         </div>
     )
