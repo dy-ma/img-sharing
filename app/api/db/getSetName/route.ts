@@ -1,7 +1,7 @@
 "use server"
 
 import { neon } from "@neondatabase/serverless";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 const generateAvailableName = 
 `WITH new_name AS (
@@ -19,7 +19,7 @@ WHERE NOT EXISTS (
 )
 LIMIT 1;`
 
-export async function GET(req: NextRequest) {
+export async function GET() {
     const sql = neon(`${process.env.DB_DATABASE_URL}`);
 
     try {

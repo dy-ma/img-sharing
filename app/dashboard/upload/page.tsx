@@ -11,7 +11,7 @@ const titleSchema = z.string()
     .max(50, "Set name cannot be longer than 50 characters")
     .regex(/^[a-zA-Z0-9-_]+$/, "Set name can only contain letters, numbers, dashes and underscores")
 
-export const validateSetName = (setName: string) => {
+const validateSetName = (setName: string) => {
     try {
         titleSchema.parse(setName);
         return { valid: true };
@@ -28,7 +28,7 @@ export default function Upload() {
     const [tags, setTags] = useState("");
     const [files, setFiles] = useState<FileList | null>(null);
     const [isUploading, setIsUploading] = useState(false);
-    const [message, setMessage] = useState("");
+    // const [message, setMessage] = useState("");
     const [error, setError] = useState("");
 
     // Get a random name to set as title
@@ -151,8 +151,8 @@ export default function Upload() {
                 }
             }
 
-        } catch (err) {
-            setError("An error occured during the request.");
+        } catch {
+            setError("An error occurred adding set.");
         } finally {
             setIsUploading(false);
         }
@@ -193,7 +193,7 @@ export default function Upload() {
                 {isUploading ? "Uploading..." : "Upload"}
             </Button>
 
-            {message && <p>{message}</p>}
+            {/* {message && <p>{message}</p>} */}
             {error && <p style={{ color: 'red' }}>{error}</p>}
         </div>
     )

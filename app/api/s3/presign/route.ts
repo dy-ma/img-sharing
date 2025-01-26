@@ -45,12 +45,6 @@ const PresignRequestSchema = z.object({
 })
 
 async function generatePresignedUrl(filename: string): Promise<string> {
-    const command = new PutObjectCommand({
-        Bucket: BUCKET_NAME,
-        Key: filename,
-        ContentType: 'application/octet-stream',
-    });
-
     // Expires in 1 hour
     const signedUrl = await getSignedUrl(
         S3,
@@ -76,7 +70,7 @@ export async function POST(req: NextRequest) {
         const parsedBody = PresignRequestSchema.parse(body);
 
         // Access validated fields
-        const { setId, setName, files } = parsedBody;
+        const { setName, files } = parsedBody;
 
         // TODO: Check if user has upload permissions
 

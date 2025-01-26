@@ -5,12 +5,6 @@ import { neon } from "@neondatabase/serverless";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
-const insert_query = `
-INSERT INTO sets (name, uploader) 
-VALUES ($1, $2)
-RETURNING id`
-
-
 export async function POST(req: NextRequest) {
     const cookie = (await cookies()).get("session")?.value;
     const session = await decrypt(cookie);
