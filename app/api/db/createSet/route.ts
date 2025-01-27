@@ -1,16 +1,11 @@
 "use server"
 
 import { createSet } from "@/app/lib/queries";
-import { decrypt, SessionPayload } from "@/app/lib/session";
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
+import { verifySession } from "@/app/lib/dal";
 
 export async function POST(req: NextRequest) {
-    const cookie = (await cookies()).get("session")?.value;
-    const session = await decrypt(cookie);
-    if (!session?.userId) {
-        return NextResponse.redirect(new URL("/login", req.nextUrl));
-    }
+    const session = await verifySession();
 
 
     const { set_name } = await req.json();

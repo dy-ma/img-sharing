@@ -1,10 +1,9 @@
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import { decrypt } from "@/app/lib/session";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
+import { verifySession } from "@/app/lib/dal";
 
 const R2_API = process.env.R2_API;
 const ACCESS_KEY_ID = process.env.R2_ACCESS_KEY_ID;
@@ -56,13 +55,7 @@ async function generatePresignedUrl(filename: string): Promise<string> {
 }
 
 export async function POST(req: NextRequest) {
-    const cookie = (await cookies()).get("session")?.value;
-    const session = await decrypt(cookie);
-    if (!session?.userId) {
-        return NextResponse.json({
-            error: "Unauthorized"
-        }, { status: 401 })
-    }
+    const session = await verifySession();
 
     try {
         // Parse and validate request body

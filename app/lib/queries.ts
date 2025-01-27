@@ -1,8 +1,6 @@
 "use server"
 
 import { neon } from "@neondatabase/serverless";
-import { cookies } from "next/headers";
-import { decrypt } from "./session";
 
 export type Set = {
     id: string
@@ -66,7 +64,7 @@ export async function addImageToSet(setId: string, fileName: string, userId: str
     }
 }
 
-export async function getSets(): Promise<Set[]> {
+export async function getSets(userId: string): Promise<Set[]> {
     const query = `
         SELECT 
             sets.id as id,
@@ -78,14 +76,9 @@ export async function getSets(): Promise<Set[]> {
         WHERE sets.uploader = $1 
         GROUP BY sets.id, sets.name`
 
-        const cookie = (await cookies()).get("session")?.value;
-        const session = await decrypt(cookie);
-        if (!session?.userId) {
-            return [];
-        }
 
         try {
-            const response = await sql(query, [session.userId]);
+            const response = await sql(query, [userId]);
             return response as Set[];
         } catch (error) {
             console.error("Error fetching user sets with image counts:", error);
