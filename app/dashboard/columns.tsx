@@ -46,7 +46,7 @@ export const columns: ColumnDef<Set>[] = [
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
-                            onClick={() => deleteSet(set.id)}
+                            onClick={() => deleteSet(set.id)} // TODO: Move inside set page
                         >
                             Delete Set
                         </DropdownMenuItem>
