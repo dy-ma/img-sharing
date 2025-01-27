@@ -1,17 +1,9 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table";
-// import { Badge } from "@/components/ui/badge";
+import { Set } from "@/app/lib/queries";
 
-export type PhotoSet = {
-    id: string
-    name: string
-    size: number
-    status: "uploading" | "live" | "failed" | "expired"
-    tag?: string
-}
-
-export const columns: ColumnDef<PhotoSet>[] = [
+export const columns: ColumnDef<Set>[] = [
     {
         accessorKey: "name",
         header: "Name",
@@ -20,12 +12,4 @@ export const columns: ColumnDef<PhotoSet>[] = [
         accessorKey: "size",
         header: "Size",
     },
-    {
-        accessorKey: "status",
-        header: "Status",
-    },
-    {
-        accessorKey: "tag",
-        header: "Tag"
-    }
 ]

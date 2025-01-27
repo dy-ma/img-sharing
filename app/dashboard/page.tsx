@@ -1,51 +1,22 @@
+"use server"
+
 import { Button } from "@/components/ui/button";
 // import { logout } from "../login/actions";
-import { PhotoSet, columns } from "./columns";
+import { columns } from "./columns";
 import { DataTable } from "./datatable";
 import Link from "next/link";
-
-async function getData(): Promise<PhotoSet[]> {
-    return [
-
-        {
-            id: "123as43",
-            name: "name1",
-            size: 34,
-            status: "live"
-        },
-        {
-            id: "12324bn",
-            name: "name2",
-            size: 10,
-            status: "uploading",
-            tag: "122345"
-        },
-        {
-            id: "99999",
-            name: "name3",
-            size: 10000,
-            status: "failed",
-            tag: "99"
-        },
-        {
-            id: "4444",
-            name: "name4",
-            size: 23,
-            status: "expired",
-            tag: "122345"
-        }
-    ]
-}
+import { getSets } from "@/app/lib/queries";
 
 export default async function Dashboard() {
-    const data = await getData();
+    const sets = await getSets();
+    // console.log(sets)
 
     return (
         <div className="container mx-auto py-10">
             <Button asChild>
                 <Link href="/dashboard/upload">Add Set</Link>
             </Button>
-            <DataTable columns={columns} data={data}/>
+            <DataTable columns={columns} data={sets}/>
         </div>
     )
 }

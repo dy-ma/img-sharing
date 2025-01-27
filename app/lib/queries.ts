@@ -1,6 +1,14 @@
 "use server"
 
 import { neon } from "@neondatabase/serverless";
+import { cookies } from "next/headers";
+import { decrypt } from "./session";
+
+export type Set = {
+    id: string
+    name: string
+    size: number
+}
 
 const sql = neon(`${process.env.DB_DATABASE_URL}`);
 
@@ -56,4 +64,31 @@ export async function addImageToSet(setId: string, fileName: string, userId: str
         console.error("Adding image to set:", error);
         return null
     }
+}
+
+export async function getSets(): Promise<Set[]> {
+    const query = `
+        SELECT 
+            sets.id as id,
+            sets.name as name,
+            COUNT(images.id) AS size
+        FROM sets
+        LEFT JOIN images
+        ON sets.id = images.set_id
+        WHERE sets.uploader = $1 
+        GROUP BY sets.id, sets.name`
+
+        const cookie = (await cookies()).get("session")?.value;
+        const session = await decrypt(cookie);
+        if (!session?.userId) {
+            return [];
+        }
+
+        try {
+            const response = await sql(query, [session.userId]);
+            return response as Set[];
+        } catch (error) {
+            console.error("Error fetching user sets with image counts:", error);
+            return []
+        }
 }
