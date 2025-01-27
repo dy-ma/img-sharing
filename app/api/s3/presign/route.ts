@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
         const parsedBody = PresignRequestSchema.parse(body);
 
         // Access validated fields
-        const { setName, files } = parsedBody;
+        const { setId, setName, files } = parsedBody;
 
         // TODO: Check if user has upload permissions
 
@@ -73,6 +73,7 @@ export async function POST(req: NextRequest) {
                 const presignedUrl = await generatePresignedUrl(filename);
 
                 return {
+                    setId: setId,
                     originalName: file.originalName,
                     presignedUrl: presignedUrl,
                     filename: filename

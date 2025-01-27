@@ -8,6 +8,12 @@ export type Set = {
     size: number
 }
 
+export type Image = {
+    set_id: string
+    filename: string // uuid + extension
+    uploader: string 
+}
+
 const sql = neon(`${process.env.DB_DATABASE_URL}`);
 
 export async function generateAvailableSetName(): Promise<string> {
@@ -53,14 +59,37 @@ export async function createSet(setName: string, userId: string): Promise<number
     }
 }
 
-export async function addImageToSet(setId: string, fileName: string, userId: string): Promise<number | null> {
+export async function addImageToSet(image: Image): Promise<number | null> {
     const query = "INSERT INTO images (set_id, filename, uploader) VALUES ($1, $2, $3) RETURNING id";
     try {
-        const response = await sql(query, [setId, fileName, userId]);
-        return response[0]?.id || null
-    } catch (error) {
-        console.error("Adding image to set:", error);
-        return null
+        const response = await sql(query, [image.set_id, image.filename, image.uploader]);
+        if (response.length === 0) {
+            throw new Error(`Failed to insert image with filename ${image.filename}`);
+        }
+        return response[0]?.id || null;
+    } catch (error: any) {
+        console.error("Error adding image to set:", error.message || error);
+        throw new Error(`Failed to add image to set: ${image.filename}`);
+    }
+}
+
+export async function addImagesToSet(images: Image[]) {
+    const errors: string[] = []; // To collect any errors during image insertion
+
+    for (let image of images) {
+        try {
+            const result = await addImageToSet(image);
+            if (!result) {
+                errors.push(`Failed to add image with filename ${image.filename}`);
+            }
+        } catch (error: any) {
+            console.error("Error adding image to set:", error);
+            errors.push(`Failed to add image with filename ${image.filename}: ${error.message || error}`);
+        }
+    }
+
+    if (errors.length > 0) {
+        throw new Error(`Some images failed to be added: ${errors.join(', ')}`);
     }
 }
 

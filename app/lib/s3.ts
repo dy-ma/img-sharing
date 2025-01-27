@@ -20,3 +20,7 @@ const S3 = new S3Client({
     requestChecksumCalculation: "WHEN_REQUIRED",
     responseChecksumValidation: "WHEN_REQUIRED",
 });
+
+export async function deleteImage(uploaderId: string, filename: string) {
+
+}

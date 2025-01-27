@@ -1,6 +1,6 @@
 "use server"
 
-import { addImageToSet } from "@/app/lib/queries";
+import { addImageToSet, Image } from "@/app/lib/queries";
 import { NextRequest, NextResponse } from "next/server";
 import { verifySession } from "@/app/lib/dal";
 
@@ -15,7 +15,12 @@ export async function POST(req: NextRequest) {
         );
     }
 
-    const id = await addImageToSet(setId, fileName, session.userId);
+    const image: Image = {
+        set_id: setId,
+        filename: fileName,
+        uploader: session.userId
+    }
+    const id = await addImageToSet(image);
     if (id) {
         return NextResponse.json({ success: true, imageId: String(id) });
     } else {

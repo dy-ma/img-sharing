@@ -24,8 +24,8 @@ const validateSetName = (setName: string) => {
 };
 
 function validateInputs(title: string, files: FileList | null) {
-    if (!title) return { valid: false, error: "Provide a title."};
-    if (!files) return { valid: false, error: "Select files to upload."};
+    if (!title) return { valid: false, error: "Provide a title." };
+    if (!files) return { valid: false, error: "Select files to upload." };
 
     const validation = validateSetName(title);
     if (!validation.valid) return { valid: false, error: validation.error };
@@ -59,7 +59,7 @@ async function getPresignedUrls(setId: string, setName: string, files: FileList)
     const response = await fetch("/api/s3/presign", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ setId, setName, files: fileList})
+        body: JSON.stringify({ setId, setName, files: fileList })
     });
 
     if (!response.ok) {
@@ -70,36 +70,43 @@ async function getPresignedUrls(setId: string, setName: string, files: FileList)
     return response.json();
 }
 
-async function uploadFilesToS3(urls: any[], files: FileList) {
+async function uploadFileToS3(file: File, presignedUrl: string): Promise<boolean> {
+    const response = await fetch(presignedUrl, { method: "PUT", body: file });
+
+    if (!response.ok) {
+        return false;
+    }
+
+    return true;
+}
+
+
+async function uploadFilesToS3(urls: any[], files: FileList): Promise<boolean> {
     const uploadPromises = Array.from(files).map((file, i) => {
         const url = urls[i].presignedUrl;
-        return fetch(url, { method: "PUT", body: file }).then((response) => {
-            if (!response.ok) throw new Error(`Failed to upload file: ${file.name}`);
-        });
+        return uploadFileToS3(file, url);
     });
 
-    // Wait for all uploads to complete
-    await Promise.all(uploadPromises);
+    // Wait for all uploads to complete and capture the result
+    const results = await Promise.all(uploadPromises);
+    return true;
 }
 
-async function addImagesToDb(setId: string, files: FileList) {
-    const dbPromises = Array.from(files).map(async (file) => {
-        const imageData = { setId, fileName: file.name };
+async function addImagesToDb(urls: any[]) {
+    console.log("Entered addImagesToDb")
+    console.log(urls)
+    let response = await fetch("/api/db/addImages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(urls)
+    })
 
-        return fetch("/api/db/addImage", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(imageData),
-        }).then((response) => {
-            if (!response.ok) throw new Error(`Failed to add image: ${file.name}`);
-        });
-    });
-
-    // Wait for all database entries to complete
-    await Promise.all(dbPromises);
+    if (!response.ok) {
+        throw new Error("Failed to store image data");
+    }
 }
 
-export default function Upload({ initialTitle }: {initialTitle: string}) {
+export default function Upload({ initialTitle }: { initialTitle: string }) {
     const [name, setName] = useState(initialTitle || "");
     const [tags, setTags] = useState("");
     const [files, setFiles] = useState<FileList | null>(null);
@@ -118,9 +125,13 @@ export default function Upload({ initialTitle }: {initialTitle: string}) {
 
         try {
             const setId = await createSet(name);
+            console.log(`Created set with id: ${setId}`);
             const { urls } = await getPresignedUrls(setId, name, files!);
+            console.log(urls)
             await uploadFilesToS3(urls, files!);
-            await addImagesToDb(setId, files!);
+            console.log("Uploaded to s3")
+            await addImagesToDb(urls);
+            console.log("added to db")
             alert("Upload successful!");
         } catch (error: any) {
             setError(error.message || "An error occured during upload.");
