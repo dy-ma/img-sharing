@@ -20,7 +20,7 @@ export async function deleteSession() {
     (await cookies()).delete("session");
 }
 
-type SessionPayload = {
+export type SessionPayload = {
     userId: string;
     expiresAt: Date;
 };
@@ -33,13 +33,18 @@ export async function encrypt(payload: SessionPayload) {
         .sign(encodedKey);
 }
 
-export async function decrypt(session: string | undefined = "") {
+export async function decrypt(session: string | undefined = ""): Promise<SessionPayload | null> {
     try {
         const { payload } = await jwtVerify(session, encodedKey, {
             algorithms: ["HS256"],
         });
-        return payload;
+        const typedPayload = payload as SessionPayload;
+        if (!typedPayload.userId || !typedPayload.expiresAt) {
+            return null;
+        }
+        return typedPayload;
     } catch {
         console.log("Failed to verify session");
+        return null;
     }
 }

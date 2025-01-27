@@ -90,6 +90,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ urls });
     } catch (error) {
         if (error instanceof z.ZodError) {
+            console.log(error.errors);
             return NextResponse.json(
                 { error: "Invalid Request", details: error.errors },
                 { status: 400 }
