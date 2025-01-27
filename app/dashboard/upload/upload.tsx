@@ -23,122 +23,110 @@ const validateSetName = (setName: string) => {
     }
 };
 
+function validateInputs(title: string, files: FileList | null) {
+    if (!title) return { valid: false, error: "Provide a title."};
+    if (!files) return { valid: false, error: "Select files to upload."};
+
+    const validation = validateSetName(title);
+    if (!validation.valid) return { valid: false, error: validation.error };
+
+    return { valid: true };
+}
+
+async function createSet(setName: string) {
+    const response = await fetch("/api/db/createSet", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ set_name: setName }),
+    });
+
+    if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to create set.");
+    }
+
+    const { setId } = await response.json();
+    if (!setId) throw new Error("Set ID not returned.");
+    return setId;
+}
+
+async function getPresignedUrls(setId: string, setName: string, files: FileList) {
+    const fileList = Array.from(files).map((file) => ({
+        originalName: file.name,
+        mimeType: file.type,
+    }));
+
+    const response = await fetch("/api/s3/presign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ setId, setName, files: fileList})
+    });
+
+    if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to generate presigned URLs.");
+    }
+
+    return response.json();
+}
+
+async function uploadFilesToS3(urls: any[], files: FileList) {
+    const uploadPromises = Array.from(files).map((file, i) => {
+        const url = urls[i].presignedUrl;
+        return fetch(url, { method: "PUT", body: file }).then((response) => {
+            if (!response.ok) throw new Error(`Failed to upload file: ${file.name}`);
+        });
+    });
+
+    // Wait for all uploads to complete
+    await Promise.all(uploadPromises);
+}
+
+async function addImagesToDb(setId: string, files: FileList) {
+    const dbPromises = Array.from(files).map(async (file) => {
+        const imageData = { setId, fileName: file.name };
+
+        return fetch("/api/db/addImage", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(imageData),
+        }).then((response) => {
+            if (!response.ok) throw new Error(`Failed to add image: ${file.name}`);
+        });
+    });
+
+    // Wait for all database entries to complete
+    await Promise.all(dbPromises);
+}
+
 export default function Upload({ initialTitle }: {initialTitle: string}) {
-    const [title, setTitle] = useState(initialTitle || "");
+    const [name, setName] = useState(initialTitle || "");
     const [tags, setTags] = useState("");
     const [files, setFiles] = useState<FileList | null>(null);
     const [isUploading, setIsUploading] = useState(false);
     const [error, setError] = useState("");
 
     async function handleUpload() {
-        if (!title || !files) {
-            alert("Provide a title and select files.")
-            return;
-        }
-
-
-        const validation = validateSetName(title);
+        const validation = validateInputs(name, files);
         if (!validation.valid) {
-            setError(validation.error || "Title error");
+            setError(validation.error || "Input validation error.");
             return;
         }
 
         setIsUploading(true);
+        setError("");
 
         try {
-            // Create a new set and get id
-            const createSetResponse = await fetch("/api/db/createSet", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ set_name: title })
-            });
-
-            if (!createSetResponse.ok) {
-                const data = await createSetResponse.json();
-                setError(data.error || "Failed to create set.");
-                setIsUploading(false);
-                return;
-            }
-
-            const { setId } = await createSetResponse.json();
-            if (!setId) {
-                setError("Set ID not returned.");
-                setIsUploading(false);
-                return;
-            }
-
-            // Prepare files for request
-            const fileList = Array.from(files).map((file) => ({
-                originalName: file.name,
-                mimeType: file.type,
-            }));
-
-            // Send the requst to get presigned urls
-            const res = await fetch("/api/s3/presign", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    setId: setId,
-                    setName: title,
-                    files: fileList
-                })
-            });
-
-            if (!res.ok) {
-                const data = await res.json();
-                setError(data.error || "Failed to generate presigned URLs");
-                setIsUploading(false);
-                return;
-            }
-
-            const { urls } = await res.json();
-            console.log(urls);
-
-            // Upload
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                const url = urls[i].presignedUrl;
-
-                const upload_result = await fetch(url, {
-                    method: "PUT",
-                    body: file,
-                });
-
-                if (!upload_result.ok) {
-                    setError("Failed to upload.");
-                    break;
-                }
-
-                // Populate the images table
-                const imageData = {
-                    setId: setId,
-                    fileName: file.name,
-                }
-
-                const addImageResponse = await fetch("/api/db/addImage", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(imageData),
-                })
-                
-                if (!addImageResponse.ok) {
-                    setError("Failed to add image for file: " + file.name);
-                    break;
-                }
-            }
-
-        } catch {
-            setError("An error occurred adding set.");
+            const setId = await createSet(name);
+            const { urls } = await getPresignedUrls(setId, name, files!);
+            await uploadFilesToS3(urls, files!);
+            await addImagesToDb(setId, files!);
+            alert("Upload successful!");
+        } catch (error: any) {
+            setError(error.message || "An error occured during upload.");
         } finally {
             setIsUploading(false);
         }
-
     }
 
     return (
@@ -147,9 +135,9 @@ export default function Upload({ initialTitle }: {initialTitle: string}) {
             <Input
                 className="max-w-l"
                 id="title"
-                placeholder={title}
-                value={title}
-                onChange={e => setTitle(e.target.value)}
+                placeholder={name}
+                value={name}
+                onChange={e => setName(e.target.value)}
             />
 
             <div>Tags</div>
