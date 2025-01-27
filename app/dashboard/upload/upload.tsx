@@ -80,22 +80,24 @@ async function uploadFileToS3(file: File, presignedUrl: string): Promise<boolean
     return true;
 }
 
-
 async function uploadFilesToS3(urls: any[], files: FileList): Promise<boolean> {
     const uploadPromises = Array.from(files).map((file, i) => {
         const url = urls[i].presignedUrl;
         return uploadFileToS3(file, url);
     });
 
-    // Wait for all uploads to complete and capture the result
+    // Wait for all uploads to complete
     const results = await Promise.all(uploadPromises);
-    return true;
+
+    // Check if all results are true
+    const allSuccessful = results.every(result => result === true);
+    return allSuccessful;
 }
 
 async function addImagesToDb(urls: any[]) {
     console.log("Entered addImagesToDb")
     console.log(urls)
-    let response = await fetch("/api/db/addImages", {
+    const response = await fetch("/api/db/addImages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(urls)

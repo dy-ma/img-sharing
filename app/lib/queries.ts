@@ -14,7 +14,12 @@ export type Image = {
     uploader: string 
 }
 
-const sql = neon(`${process.env.DB_DATABASE_URL}`);
+const URL = process.env.DB_DATABASE_URL
+if (!URL) {
+    throw new Error("Database Connection String not defined")
+}
+
+const sql = neon(URL);
 
 export async function generateAvailableSetName(): Promise<string> {
     const query = `
@@ -76,7 +81,7 @@ export async function addImageToSet(image: Image): Promise<number | null> {
 export async function addImagesToSet(images: Image[]) {
     const errors: string[] = []; // To collect any errors during image insertion
 
-    for (let image of images) {
+    for (const image of images) {
         try {
             const result = await addImageToSet(image);
             if (!result) {

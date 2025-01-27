@@ -56,6 +56,9 @@ async function generatePresignedUrl(filename: string): Promise<string> {
 
 export async function POST(req: NextRequest) {
     const session = await verifySession();
+    if (!session.isAuth) {
+        return NextResponse.json({ error: "Unauthorized"}, { status: 401 })
+    }
 
     try {
         // Parse and validate request body
