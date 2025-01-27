@@ -95,8 +95,6 @@ async function uploadFilesToS3(urls: any[], files: FileList): Promise<boolean> {
 }
 
 async function addImagesToDb(urls: any[]) {
-    console.log("Entered addImagesToDb")
-    console.log(urls)
     const response = await fetch("/api/db/addImages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -127,13 +125,9 @@ export default function Upload({ initialTitle }: { initialTitle: string }) {
 
         try {
             const setId = await createSet(name);
-            console.log(`Created set with id: ${setId}`);
             const { urls } = await getPresignedUrls(setId, name, files!);
-            console.log(urls)
             await uploadFilesToS3(urls, files!);
-            console.log("Uploaded to s3")
             await addImagesToDb(urls);
-            console.log("added to db")
             alert("Upload successful!");
         } catch (error: any) {
             setError(error.message || "An error occured during upload.");

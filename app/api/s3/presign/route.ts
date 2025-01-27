@@ -1,30 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 import { verifySession } from "@/app/lib/dal";
-
-const R2_API = process.env.R2_API;
-const ACCESS_KEY_ID = process.env.R2_ACCESS_KEY_ID;
-const SECRET_ACCESS_KEY = process.env.R2_SECRET_ACCESS_KEY;
-const BUCKET_NAME = process.env.R2_BUCKET_NAME;
-
-if (!R2_API || !ACCESS_KEY_ID || !SECRET_ACCESS_KEY || !BUCKET_NAME) {
-    throw new Error("Missing environment variables for S3 client config.")
-}
-
-const S3 = new S3Client({
-    region: "auto",
-    endpoint: R2_API,
-    credentials: {
-        accessKeyId: ACCESS_KEY_ID,
-        secretAccessKey: SECRET_ACCESS_KEY,
-    },
-    // compatibility for R2
-    requestChecksumCalculation: "WHEN_REQUIRED",
-    responseChecksumValidation: "WHEN_REQUIRED",
-});
+import { generatePresignedUrl } from "@/app/lib/s3";
 
 function generateFilenameWithExtension(set_name: string, original: string): string {
     const extension = original.split('.').pop();
@@ -42,17 +20,6 @@ const PresignRequestSchema = z.object({
         })
     )
 })
-
-async function generatePresignedUrl(filename: string): Promise<string> {
-    // Expires in 1 hour
-    const signedUrl = await getSignedUrl(
-        S3,
-        new PutObjectCommand({ Bucket: BUCKET_NAME, Key: filename }),
-        { expiresIn: 3600 }
-    )
-
-    return signedUrl;
-}
 
 export async function POST(req: NextRequest) {
     const session = await verifySession();
