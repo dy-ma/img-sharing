@@ -9,7 +9,6 @@ import { getSets } from "@/app/lib/queries";
 
 export default async function Dashboard() {
     const sets = await getSets();
-    // console.log(sets)
 
     return (
         <div className="container mx-auto py-10">
