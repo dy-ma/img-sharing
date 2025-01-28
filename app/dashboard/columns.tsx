@@ -1,6 +1,6 @@
 "use client"
 
-import { deleteSet, Set } from "@/app/lib/queries";
+import { Set } from "@/app/lib/queries";
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,22 +12,48 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-  } from "@/components/ui/dropdown-menu"
-
+} from "@/components/ui/dropdown-menu"
+import Link from "next/link";
 
 export const columns: ColumnDef<Set>[] = [
     {
         accessorKey: "name",
         header: "Name",
+        cell: ({row}) => {
+            const set = row.original;
+            return (
+                <Link 
+                    href={`/set/${set.name}`}
+                    className="text-decoration-line"
+                >
+                    {set.name}
+                </Link>
+            )
+        }
     },
     {
         accessorKey: "size",
         header: "Size",
     },
     {
+        accessorKey: "created_at",
+        header: "Expires in",
+        cell: ({ row }) => {
+            const set = row.original;
+
+            // Calculate remaining days
+            const expirationDate = new Date(set.created_at.getTime() + 12096e5);
+            const timeRemaining = expirationDate.getTime() - Date.now();
+            const daysRemaining = timeRemaining / (1000 * 60 * 60 * 24)
+            return (
+                <span>{Math.round(daysRemaining)} days</span>
+            )
+        }
+    },
+    {
         id: "actions",
         cell: ({ row }) => {
-            const set = row.original
+            const set = row.original;
 
             return (
                 <DropdownMenu>
@@ -45,10 +71,8 @@ export const columns: ColumnDef<Set>[] = [
                             Copy Set ID
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                            onClick={() => deleteSet(set.id)} // TODO: Move inside set page
-                        >
-                            Delete Set
+                        <DropdownMenuItem>
+                            Action 2
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

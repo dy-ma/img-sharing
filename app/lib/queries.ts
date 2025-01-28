@@ -6,10 +6,13 @@ import { deleteImageFromS3 } from "./s3";
 export type Set = {
     id: string
     name: string
-    size: number
+    size?: number
+    uploader?: string
+    created_at: Date
 }
 
 export type Image = {
+    id?: string
     set_id: string
     filename: string // uuid + extension
     uploader: string 
@@ -104,7 +107,8 @@ export async function getSets(userId: string): Promise<Set[]> {
         SELECT 
             sets.id as id,
             sets.name as name,
-            COUNT(images.id) AS size
+            COUNT(images.id) AS size,
+            sets.created_at
         FROM sets
         LEFT JOIN images
         ON sets.id = images.set_id
@@ -173,4 +177,26 @@ export async function deleteSet(set_id: string): Promise<boolean> {
         console.error("Error deleting set: ", error);
         return false
     }
+}
+
+export async function getSetMetadata(set_name: string): Promise<Set> {
+    const query = "SELECT * FROM sets WHERE name = $1";
+    const response = await sql(query, [set_name]);
+
+    if (response.length != 1) {
+        throw new Error("Set not Found");
+    }
+
+    return response[0] as Set;
+}
+
+export async function getImagesInSet(set_id: string): Promise<Image[]> {
+    const query = "SELECT * FROM images WHERE set_id = $1";
+    const response = await sql(query, [set_id]);
+
+    if (response.length <= 0) {
+        throw new Error("No images found");
+    }
+    
+    return response as Image[];
 }
