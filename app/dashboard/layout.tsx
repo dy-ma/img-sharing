@@ -12,7 +12,9 @@ export default async function DashboardLayout({
     return (
         <div>
             <header className="flex justify-between p-4">
-                <h1 className="text-xl font-semibold">ImgShare</h1>
+                <Link href="/">
+                    <h1 className="text-xl font-semibold">ImgShare</h1>
+                </Link>
                 {session.isAuth == true ?
                     <Button onClick={logout}>Sign Out</Button>
                     : <Button asChild><Link href="/login">Sign In</Link></Button>

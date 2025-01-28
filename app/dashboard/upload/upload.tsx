@@ -129,7 +129,6 @@ export default function Upload({ initialTitle }: { initialTitle: string }) {
             const { urls } = await getPresignedUrls(setId, name, files!);
             await uploadFilesToS3(urls, files!);
             await addImagesToDb(urls);
-            alert("Upload successful!");
         } catch (error: any) {
             setError(error.message || "An error occured during upload.");
         } finally {
