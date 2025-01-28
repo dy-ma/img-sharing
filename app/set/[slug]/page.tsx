@@ -69,7 +69,7 @@ export default async function Page({
             }
             {/* Title and Uploader Info */}
             <div className="flex flex-col sm:flex-row mb-4 justify-between sm:max-w-xl items-center">
-                <div className="my-4">
+                <div className="my-4 p-3">
                     <h1 className="text-2xl font-bold">{set.name}</h1>
                     <p className="text-sm text-gray-600">Uploaded by: {uploader.email}</p>
                     <ExpiryDisplay daysRemaining={daysRemaining} totalDays={totalDays} />
