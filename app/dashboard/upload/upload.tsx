@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { useState } from "react";
 import { z } from "zod";
+import { redirect } from "next/navigation";
 
 const titleSchema = z.string()
     .min(1, "Set name cannot be empty")
@@ -133,6 +134,7 @@ export default function Upload({ initialTitle }: { initialTitle: string }) {
             setError(error.message || "An error occured during upload.");
         } finally {
             setIsUploading(false);
+            redirect(`/set/${name}`);
         }
     }
 
@@ -145,15 +147,6 @@ export default function Upload({ initialTitle }: { initialTitle: string }) {
                 placeholder={name}
                 value={name}
                 onChange={e => setName(e.target.value)}
-            />
-
-            <div>Tags</div>
-            <Input
-                className="max-w-l"
-                id="tags"
-                placeholder="Tags"
-                value={tags}
-                onChange={e => setTags(e.target.value)}
             />
 
             <div className="grid w-full max-w-sm items-center gap-1.5">

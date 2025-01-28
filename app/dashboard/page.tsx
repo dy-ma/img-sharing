@@ -18,11 +18,11 @@ export default async function Dashboard() {
 
     return (
         <div className="container mx-auto py-10">
-            <div className="flex gap-2 mb-2">
+            <div className="flex mb-2 justify-between items-end">
+                <h1 className="font-semibold text-xl">Dashboard</h1>
                 <Button asChild>
                     <Link href="/dashboard/upload">Add Set</Link>
                 </Button>
-                <Button onClick={logout}>Sign Out</Button>
             </div>
             <DataTable columns={columns} data={sets} />
         </div>

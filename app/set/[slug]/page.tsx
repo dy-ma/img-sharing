@@ -1,10 +1,13 @@
 "use server"
+
 import { verifySession } from "@/app/lib/dal";
-import { Image as tImage, getImagesInSet, getSetMetadata, getUser } from "@/app/lib/queries";
+import { Image as tImage, getImagesInSet, getSetMetadata, getUser, deleteSet } from "@/app/lib/queries";
 import { generatePresignedGetUrl } from "@/app/lib/s3";
 import { redirect } from "next/navigation";
 import ImageGrid from "./ImageGrid";
 import ShareLink from "./ShareLink";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 async function getPresigned(images: tImage[]) {
     const presigned = await Promise.all(
@@ -45,16 +48,31 @@ export default async function Page({
     const presignedUrls = await getPresigned(images);
     const uploader = await getUser(set.uploader!);
 
+    let isUploader = false;
+    if (session.isAuth && session.userId === set.uploader) {
+        isUploader = true;
+    }
+
+    async function handleDelete() {
+        redirect("/dashboard");
+    }
+
     return (
-        <div className="container m-auto py-2">
+        <div className="container p-4">
+            {isUploader &&
+                <Button variant="link" asChild>
+                    <Link href="/dashboard">Back to Dashboard</Link>
+                </Button>
+            }
             {/* Title and Uploader Info */}
-            <div className="mb-4">
+            <div className="my-4">
                 <h1 className="text-2xl font-bold">{set.name}</h1>
                 <p className="text-sm text-gray-600">Uploaded by: {uploader.email}</p>
-                <ShareLink set_name={set.name} token={set.token!}/>
+                <ShareLink set_name={set.name} token={set.token!} />
             </div>
 
-            <ImageGrid images={presignedUrls}/>
+            <ImageGrid images={presignedUrls} />
+
         </div>
     );
 }
