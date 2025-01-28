@@ -8,6 +8,7 @@ import ImageGrid from "./ImageGrid";
 import ShareLink from "./ShareLink";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import QRCodeDisplay from "./QRCodeDisplay";
 
 async function getPresigned(images: tImage[]) {
     const presigned = await Promise.all(
@@ -53,10 +54,6 @@ export default async function Page({
         isUploader = true;
     }
 
-    async function handleDelete() {
-        redirect("/dashboard");
-    }
-
     return (
         <div className="container p-4">
             {isUploader &&
@@ -65,12 +62,17 @@ export default async function Page({
                 </Button>
             }
             {/* Title and Uploader Info */}
-            <div className="my-4">
-                <h1 className="text-2xl font-bold">{set.name}</h1>
-                <p className="text-sm text-gray-600">Uploaded by: {uploader.email}</p>
-                <ShareLink set_name={set.name} token={set.token!} />
+            <div className="flex flex-col sm:flex-row mb-4 justify-between sm:max-w-xl items-center">
+                <div className="my-4">
+                    <h1 className="text-2xl font-bold">{set.name}</h1>
+                    <p className="text-sm text-gray-600">Uploaded by: {uploader.email}</p>
+                    <ShareLink set_name={set.name} token={set.token!} />
+                </div>
+
+                <QRCodeDisplay set_name={set.name} token={set.token!} />
             </div>
 
+            {/* Images */}
             <ImageGrid images={presignedUrls} />
 
         </div>

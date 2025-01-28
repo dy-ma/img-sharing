@@ -1,12 +1,14 @@
 "use server"
 import { generateAvailableSetName } from "@/app/lib/queries";
 import Upload from "./upload";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default async function UploadPage() {
     const initialTitle = await generateAvailableSetName();
 
     return (
-        <div className="flex flex-col p-5">
+        <div className="flex flex-col p-5 sm:max-w-xl items-start">
             <Upload initialTitle={initialTitle} />
         </div>
     )

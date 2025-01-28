@@ -1,12 +1,12 @@
 "use server"
 
 import { Button } from "@/components/ui/button";
-import { logout } from "../login/actions";
 import { columns } from "./columns";
 import { DataTable } from "./datatable";
 import Link from "next/link";
 import { Set, getSets } from "@/app/lib/queries";
 import { verifySession } from "../lib/dal";
+import { Plus } from "lucide-react";
 
 export default async function Dashboard() {
     const session = await verifySession()
@@ -19,9 +19,11 @@ export default async function Dashboard() {
     return (
         <div className="container mx-auto py-10">
             <div className="flex mb-2 justify-between items-end">
-                <h1 className="font-semibold text-xl">Dashboard</h1>
-                <Button asChild>
-                    <Link href="/dashboard/upload">Add Set</Link>
+                <h1 className="font-semibold text-xl">Sets</h1>
+                <Button asChild variant="outline">
+                    <Link href="/dashboard/upload" aria-label="Add Set">
+                        <Plus className="h-4 w-4" />
+                    </Link>
                 </Button>
             </div>
             <DataTable columns={columns} data={sets} />

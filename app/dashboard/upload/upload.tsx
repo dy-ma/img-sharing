@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { useState } from "react";
 import { z } from "zod";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 
 const titleSchema = z.string()
     .min(1, "Set name cannot be empty")
@@ -139,7 +140,7 @@ export default function Upload({ initialTitle }: { initialTitle: string }) {
     }
 
     return (
-        <div className="flex flex-col py-5 px-5">
+        <div className="flex flex-col py-5 px-5 space-y-2">
             <Label htmlFor="title">Title</Label>
             <Input
                 className="max-w-l"
@@ -161,6 +162,9 @@ export default function Upload({ initialTitle }: { initialTitle: string }) {
 
             <Button onClick={handleUpload} disabled={isUploading}>
                 {isUploading ? "Uploading..." : "Upload"}
+            </Button>
+            <Button variant="secondary" asChild>
+                <Link href="/dashboard">Cancel</Link>
             </Button>
 
             {/* {message && <p>{message}</p>} */}
