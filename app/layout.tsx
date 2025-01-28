@@ -2,11 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
-import { Button } from "@/components/ui/button";
-import { login, logout } from "./login/actions";
-import { verifySession } from "./lib/dal";
-import { redirect } from "next/dist/server/api-utils";
-import Link from "next/link";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,9 +23,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
-  const session = await verifySession();
-
   return (
     <html lang="en" suppressHydrationWarning>
       <body

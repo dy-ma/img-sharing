@@ -1,7 +1,7 @@
 "use server"
 
 import { verifySession } from "@/app/lib/dal";
-import { Image as tImage, getImagesInSet, getSetMetadata, getUser, deleteSet } from "@/app/lib/queries";
+import { Image as tImage, getImagesInSet, getSetMetadata, getUser } from "@/app/lib/queries";
 import { generatePresignedGetUrl } from "@/app/lib/s3";
 import { redirect } from "next/navigation";
 import ImageGrid from "./ImageGrid";

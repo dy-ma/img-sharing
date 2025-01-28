@@ -110,7 +110,6 @@ async function addImagesToDb(urls: any[]) {
 
 export default function Upload({ initialTitle }: { initialTitle: string }) {
     const [name, setName] = useState(initialTitle || "");
-    const [tags, setTags] = useState("");
     const [files, setFiles] = useState<FileList | null>(null);
     const [isUploading, setIsUploading] = useState(false);
     const [error, setError] = useState("");
