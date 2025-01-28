@@ -18,7 +18,7 @@ export default async function Dashboard() {
 
     return (
         <div className="container mx-auto py-10">
-            <div className="flex mb-2 justify-between items-end">
+            <div className="flex mb-2 justify-between items-end p-2">
                 <h1 className="font-semibold text-xl">Sets</h1>
                 <Button asChild variant="outline">
                     <Link href="/dashboard/upload" aria-label="Add Set">
@@ -26,7 +26,9 @@ export default async function Dashboard() {
                     </Link>
                 </Button>
             </div>
-            <DataTable columns={columns} data={sets} />
+            <div className="p-2">
+                <DataTable columns={columns} data={sets} />
+            </div>
         </div>
     )
 }

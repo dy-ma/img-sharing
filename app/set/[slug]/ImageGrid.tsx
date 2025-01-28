@@ -65,7 +65,7 @@ export default function ImageGrid(props: ImageGridProps) {
                         />
                     )}
                     <DialogFooter>
-                        <Button onClick={handleSave}>Save to Desktop</Button>
+                        <Button onClick={handleSave}>View full resolution</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
