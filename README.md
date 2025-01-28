@@ -1,36 +1,99 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ImgShare
 
-## Getting Started
+A modern web application for uploading, organizing, and sharing image sets with ease. Designed for simplicity, speed, and security, this project leverages cutting-edge serverless architecture and cloud-native technologies.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Organize & Share:** Easily upload and share sets of images.
+- **Temporary Storage:** Automatically deletes sets after 14 days.
+- **Private Sharing:** Share links and QR codes for secure access.
+- **Responsive Design:** Optimized for both desktop and mobile devices.
+- **Fast Performance:** Images delivered via Cloudflare R2 for lightning-fast loading.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Architecture Overview
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This project is built on a modern serverless stack, combining powerful tools and platforms:
 
-## Learn More
+### Frontend
+- **Language:** TypeScript
+- **Framework:** Next.js 
+- **Styling:** Tailwind CSS 
+- **Components:** shadcn/ui
 
-To learn more about Next.js, take a look at the following resources:
+### Backend
+- **Cloudflare Workers:** Handles scheduled tasks (e.g., cleaning up expired image sets)
+- **Neon Database:** PostgreSQL-based serverless database used for storing metadata about image sets and user details.
+- **R2 Object Storage:** Cloudflare’s S3-compatible object storage for storing uploaded images efficiently.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## How It Works
 
-## Deploy on Vercel
+1. **Image Upload:** Users upload image sets via the dashboard.
+2. **Image Hosting:** Images are stored in R2 with presigned URLs for secure access.
+3. **Metadata Management:** Metadata, including set IDs and timestamps, is stored in the Neon database.
+4. **Set Expiry:** A Cloudflare Worker runs daily to identify and delete expired image sets and their associated metadata.
+5. **User Access:** Users can share links or QR codes for accessing the sets. Sets expire automatically after 14 days for privacy and cleanup.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Project Setup
+
+### Prerequisites
+1. Node.js and npm installed.
+2. A Neon Database instance set up.
+3. Cloudflare account with R2 bucket and Workers enabled.
+4. Vercel account for frontend hosting.
+
+### Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-repo.git
+   cd your-repo
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Set up environment variables:
+   - **SESSION_SECRET**: Cryptographic hash for generating session secrets.
+   - **R2_ACCESS_KEY** and **R2_SECRET_ACCESS_KEY**: Provided by Cloudflare for authentication.
+   - **R2_BUCKET_NAME**: Name of your R2 bucket
+   - **R2_API**: URL for the R2 bucket.
+   - **DB_DATABASE_URL**: Neon Database Connection String.
+   - **WORKER_ENDPOINT**: API endpoint for you Cloudflare worker.
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## Deployment
+
+### Frontend (Vercel)
+1. Connect your GitHub repository to Vercel.
+2. Add environment variables in the Vercel dashboard.
+3. Deploy
+
+### Backend (Cloudflare Workers & R2)
+1. Configure `wrangler.toml` for your Cloudflare account.
+2. Bind the R2 bucket and environment variables in `wrangler.toml`.
+3. Deploy Workers using Wrangler:
+   ```bash
+   npm run deploy
+   ```
+
+---
+
+## Future Improvements
+- Enable real-time image previews during uploads.
+- Provide analytics on image views and downloads.
+
+---
+
+## License
+MIT License. See [LICENSE](LICENSE) for details.
+

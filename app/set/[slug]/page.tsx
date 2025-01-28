@@ -9,6 +9,7 @@ import ShareLink from "./ShareLink";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import QRCodeDisplay from "./QRCodeDisplay";
+import { ExpiryDisplay } from "./ExpiryDisplay";
 
 async function getPresigned(images: tImage[]) {
     const presigned = await Promise.all(
@@ -49,6 +50,11 @@ export default async function Page({
     const presignedUrls = await getPresigned(images);
     const uploader = await getUser(set.uploader!);
 
+    const expirationDate = new Date(set.created_at.getTime() + 12096e5);
+    const timeRemaining = expirationDate.getTime() - Date.now();
+    const daysRemaining = Math.round(timeRemaining / (1000 * 60 * 60 * 24));
+    const totalDays = 14;
+
     let isUploader = false;
     if (session.isAuth && session.userId === set.uploader) {
         isUploader = true;
@@ -66,6 +72,7 @@ export default async function Page({
                 <div className="my-4">
                     <h1 className="text-2xl font-bold">{set.name}</h1>
                     <p className="text-sm text-gray-600">Uploaded by: {uploader.email}</p>
+                    <ExpiryDisplay daysRemaining={daysRemaining} totalDays={totalDays} />
                     <ShareLink set_name={set.name} token={set.token!} />
                 </div>
 
