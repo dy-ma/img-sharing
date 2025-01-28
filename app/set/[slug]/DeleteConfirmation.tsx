@@ -54,7 +54,7 @@ export default function DeleteConfirmDialog({
                 <DialogHeader>
                     <DialogTitle>Are you absolutely sure?</DialogTitle>
                     <DialogDescription>
-                        This action cannot be undone. This will permanently delete your photos. Make sure you've copied them somewhere.
+                        This action cannot be undone. This will permanently delete your photos. Make sure you&apos;ve copied them somewhere.
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
@@ -62,7 +62,7 @@ export default function DeleteConfirmDialog({
                         variant="destructive" 
                         onClick={handleDelete}
                         disabled={isDeleting}
-                    >Yes I'm Sure</Button>
+                    >Yes I&apos;m Sure</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

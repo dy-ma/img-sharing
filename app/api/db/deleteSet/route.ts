@@ -1,6 +1,6 @@
 "use server"
 
-import { deleteSet, getSetMetadata } from "@/app/lib/queries";
+import { deleteSet } from "@/app/lib/queries";
 import { NextRequest, NextResponse } from "next/server";
 import { verifySession } from "@/app/lib/dal";
 
