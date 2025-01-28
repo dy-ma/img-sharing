@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import QRCodeDisplay from "./QRCodeDisplay";
 import { ExpiryDisplay } from "./ExpiryDisplay";
+import DeleteConfirmDialog from "./DeleteConfirmation";
 
 async function getPresigned(images: tImage[]) {
     const presigned = await Promise.all(
@@ -82,6 +83,11 @@ export default async function Page({
             {/* Images */}
             <ImageGrid images={presignedUrls} />
 
+            {isUploader && 
+                <div className="mt-4">
+                    <DeleteConfirmDialog set={set}/>
+                </div>
+            }
         </div>
     );
 }

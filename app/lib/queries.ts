@@ -190,7 +190,7 @@ export async function getSetMetadata(set_name: string): Promise<Set> {
     const query = "SELECT * FROM sets WHERE name = $1";
     const response = await sql(query, [set_name]);
 
-    if (response.length <= 0) {
+    if (response.length != 1) {
         throw new Error("Set not Found");
     }
 

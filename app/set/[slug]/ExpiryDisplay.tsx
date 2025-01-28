@@ -9,7 +9,7 @@ export function ExpiryDisplay({ daysRemaining, totalDays }: ExpiryDisplayProps) 
   const progress = Math.max(0, Math.min(100, (daysRemaining / totalDays) * 100))
 
   let statusColor = "text-green-600"
-  let progressColor = "bg-green-600"
+  let progressColor = ""
 
   if (daysRemaining <= 3) {
     statusColor = "text-red-600"
