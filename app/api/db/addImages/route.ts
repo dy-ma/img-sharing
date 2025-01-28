@@ -15,11 +15,15 @@ export async function POST(req: NextRequest) {
             return new Response("Invalid image array", { status: 400});
         }
 
+        if (!session.isAuth) {
+            return new Response("User is not signed in.", { status: 401 });
+        }
+
         const images: Image[] = response.map((url: { setId: string, originalName: string, presignedUrl: string, filename: string }) => {
             return {
                 set_id: url.setId,
                 filename: url.filename, // Using the 'filename' property from the response
-                uploader: session.userId, // Assuming 'session.userId' holds the user id
+                uploader: session.userId!, // Assuming 'session.userId' holds the user id
             };
         });
 

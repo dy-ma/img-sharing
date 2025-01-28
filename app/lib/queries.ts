@@ -9,6 +9,7 @@ export type Set = {
     size?: number
     uploader?: string
     created_at: Date
+    token?: string
 }
 
 export type Image = {

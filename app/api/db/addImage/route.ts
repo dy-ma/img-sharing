@@ -15,10 +15,16 @@ export async function POST(req: NextRequest) {
         );
     }
 
+    if (!session.isAuth) {
+        return NextResponse.json(
+            { error: "User is not signed in." }, { status: 401 }
+        )
+    }
+
     const image: Image = {
         set_id: setId,
         filename: fileName,
-        uploader: session.userId
+        uploader: session.userId!
     }
     const id = await addImageToSet(image);
     if (id) {

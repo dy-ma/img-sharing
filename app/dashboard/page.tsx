@@ -13,7 +13,7 @@ export default async function Dashboard() {
 
     let sets: Set[] = []
     if (session.isAuth) {
-        sets = await getSets(session.userId);
+        sets = await getSets(session.userId!);
     }
 
     return (
