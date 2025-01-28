@@ -4,6 +4,7 @@ import { Image as tImage, getImagesInSet, getSetMetadata, getUser } from "@/app/
 import { generatePresignedGetUrl } from "@/app/lib/s3";
 import { redirect } from "next/navigation";
 import ImageGrid from "./ImageGrid";
+import ShareLink from "./ShareLink";
 
 async function getPresigned(images: tImage[]) {
     const presigned = await Promise.all(
@@ -42,7 +43,6 @@ export default async function Page({
     }
 
     const presignedUrls = await getPresigned(images);
-
     const uploader = await getUser(set.uploader!);
 
     return (
@@ -51,6 +51,7 @@ export default async function Page({
             <div className="mb-4">
                 <h1 className="text-2xl font-bold">{set.name}</h1>
                 <p className="text-sm text-gray-600">Uploaded by: {uploader.email}</p>
+                <ShareLink set_name={set.name} token={set.token!}/>
             </div>
 
             <ImageGrid images={presignedUrls}/>
