@@ -19,6 +19,12 @@ export type Image = {
     uploader: string 
 }
 
+export type User = {
+    id: string
+    email: string
+    name: string
+}
+
 const URL = process.env.DB_DATABASE_URL
 if (!URL) {
     throw new Error("Database Connection String not defined")
@@ -184,7 +190,7 @@ export async function getSetMetadata(set_name: string): Promise<Set> {
     const query = "SELECT * FROM sets WHERE name = $1";
     const response = await sql(query, [set_name]);
 
-    if (response.length != 1) {
+    if (response.length <= 0) {
         throw new Error("Set not Found");
     }
 
@@ -200,4 +206,15 @@ export async function getImagesInSet(set_id: string): Promise<Image[]> {
     }
     
     return response as Image[];
+}
+
+export async function getUser(id: string): Promise<User> {
+    const query = "SELECT id, email, name FROM users WHERE id = $1";
+    const response = await sql(query, [id]);
+    
+    if (response.length < 0) {
+        throw new Error("User not found");
+    }
+    
+    return response[0] as User;
 }

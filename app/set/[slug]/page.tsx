@@ -1,42 +1,18 @@
+"use server"
 import { verifySession } from "@/app/lib/dal";
-import { getImagesInSet, getSetMetadata } from "@/app/lib/queries";
+import { Image as tImage, getImagesInSet, getSetMetadata, getUser } from "@/app/lib/queries";
+import { generatePresignedGetUrl } from "@/app/lib/s3";
 import { redirect } from "next/navigation";
-import Image from "next/image";
+import ImageGrid from "./ImageGrid";
 
-async function fetchPreviewWithAuth(url: string, authToken: string, width: number) {
-    const fullpath = `${process.env.WORKER_ENDPOINT}/${url}`;
-    const response = await fetch(fullpath, {
-        method: "POST",
-        headers: {
-            "Authorization": `Bearer ${authToken}`,
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ width }),
-    })
-
-    if (!response.ok) {
-        console.log(response)
-        throw new Error("Failed to fetch image");
-    }
-
-    return await response.blob();
-}
-
-async function PreviewImage({
-    imageUrl,
-    width,
-}: {
-    imageUrl: string,
-    width: number
-}) {
-    const authToken = process.env.WORKER_SECRET_KEY;
-    if (!authToken) {
-        throw new Error("Authorization token missing.");
-    }
-
-    const imageBlob = await fetchPreviewWithAuth(imageUrl, authToken, width)
-    const imageUrlFromBlob = URL.createObjectURL(imageBlob);
-    return <Image src={imageUrlFromBlob} width={width} height={300} alt="Image in Set"/>
+async function getPresigned(images: tImage[]) {
+    const presigned = await Promise.all(
+        images.map(async (image) => {
+            const url = await generatePresignedGetUrl(image.filename);
+            return { id: image.id!, url };
+        })
+    )
+    return presigned;
 }
 
 export default async function Page({
@@ -65,19 +41,19 @@ export default async function Page({
         return redirect('/login');
     }
 
-    return (
-        <div className="container m-auto">
-            <ul>
-                <li>
-                    Photo Set: {slug}
-                </li>
-                <li>{set.id}</li>
-                <li>{set.created_at.getTime()}</li>
-                <li>{set.uploader}</li>
-            </ul>
-                {images.map((file, i) => <li key={i}>{file.filename}</li>)}
+    const presignedUrls = await getPresigned(images);
 
-                {images.map((file, i) => <PreviewImage key={i} imageUrl={file.filename} width={300} />)}
+    const uploader = await getUser(set.uploader!);
+
+    return (
+        <div className="container m-auto py-2">
+            {/* Title and Uploader Info */}
+            <div className="mb-4">
+                <h1 className="text-2xl font-bold">{set.name}</h1>
+                <p className="text-sm text-gray-600">Uploaded by: {uploader.email}</p>
+            </div>
+
+            <ImageGrid images={presignedUrls}/>
         </div>
-    )
+    );
 }
