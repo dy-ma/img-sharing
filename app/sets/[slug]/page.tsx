@@ -4,7 +4,7 @@ import { verifySession } from "@/lib/dal";
 import { Image as tImage, getImagesInSet, getSetMetadata, getUser } from "@/lib/queries";
 import { generatePresignedGetUrl } from "@/lib/s3_funcs";
 import { redirect } from "next/navigation";
-import ImageGrid from "./ImageGrid";
+import ImageGrid from "../../../components/ImageGrid";
 import ShareLink from "./ShareLink";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -83,9 +83,9 @@ export default async function Page({
             {/* Images */}
             <ImageGrid images={presignedUrls} />
 
-            {isUploader && 
+            {isUploader &&
                 <div className="mt-4">
-                    <DeleteConfirmDialog set={set}/>
+                    <DeleteConfirmDialog set={set} />
                 </div>
             }
         </div>

@@ -20,7 +20,7 @@ export default async function name(
     }
 
     return (
-        <div className="flex flex-col w-full min-h-screen p-4 pt-20 sm:pl-10">
+        <div className="flex flex-col w-full min-h-screen p-4 pt-20 sm:px-10">
             <UploadForm set={set} />
         </div>
     )

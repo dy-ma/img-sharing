@@ -35,7 +35,6 @@ export default function UploadForm({ set }: { set: Set }) {
     const [files, setFiles] = useState<FileList | null>(null);
     const [fileMetadata, setFileMetadata] = useState<FileMeta[]>([]);
     const [isDragging, setIsDragging] = useState<boolean>(false);
-    const [isUploading, setIsUploading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
     const [progress, updateProgress] = useState<number>(0);
 
@@ -112,9 +111,7 @@ export default function UploadForm({ set }: { set: Set }) {
             setError("Error fetching presigned urls.");
         }
 
-        setIsUploading(true);
         updateProgress(0);
-
         let num_images_uploaded = 0;
         let num_images_to_upload = upload_urls.length;
 
@@ -153,9 +150,7 @@ export default function UploadForm({ set }: { set: Set }) {
         })
 
         // Successful post response
-        setIsUploading(false);
-
-        // router.push(`/set/${set.name}`);
+        router.push(`/set/${set.name}`);
     }
 
     useEffect(() => {

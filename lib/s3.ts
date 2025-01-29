@@ -21,4 +21,4 @@ const S3 = new S3Client({
     responseChecksumValidation: "WHEN_REQUIRED",
 });
 
-export { S3, BUCKET_NAME };
+export { S3, BUCKET_NAME, R2_API };
