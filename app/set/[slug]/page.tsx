@@ -2,7 +2,7 @@
 
 import { verifySession } from "@/lib/dal";
 import { Image as tImage, getImagesInSet, getSetMetadata, getUser } from "@/lib/queries";
-import { generatePresignedGetUrl } from "@/lib/s3";
+import { generatePresignedGetUrl } from "@/lib/s3_funcs";
 import { redirect } from "next/navigation";
 import ImageGrid from "./ImageGrid";
 import ShareLink from "./ShareLink";

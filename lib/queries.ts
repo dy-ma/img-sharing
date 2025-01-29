@@ -1,7 +1,7 @@
 "use server"
 
 import { neon } from "@neondatabase/serverless";
-import { deleteImageFromS3 } from "./s3";
+import { deleteImageFromS3 } from "./s3_funcs";
 
 export type Set = {
     id: string

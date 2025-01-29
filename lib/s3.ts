@@ -1,7 +1,4 @@
-"use server"
-
-import { PutObjectCommand, S3Client, DeleteObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { S3Client } from "@aws-sdk/client-s3";
 
 const R2_API = process.env.R2_API;
 const ACCESS_KEY_ID = process.env.R2_ACCESS_KEY_ID;
@@ -24,39 +21,4 @@ const S3 = new S3Client({
     responseChecksumValidation: "WHEN_REQUIRED",
 });
 
-export async function generatePresignedUrl(filename: string): Promise<string> {
-    const signedUrl = await getSignedUrl(
-        S3,
-        new PutObjectCommand({ Bucket: BUCKET_NAME, Key: filename }),
-        { expiresIn: 3600 }
-    )
-
-    return signedUrl;
-}
-
-export async function generatePresignedGetUrl(filename: string): Promise<string> {
-    const signedUrl = await getSignedUrl(
-        S3,
-        new GetObjectCommand({Bucket: BUCKET_NAME, Key: filename}),
-        { expiresIn: 3600 }
-    )
-    return signedUrl;
-}
-
-export async function deleteImageFromS3(filename: string): Promise<boolean> {
-    const input = {
-        Bucket: BUCKET_NAME, // Ensure the correct environment variable is used
-        Key: filename,
-    };
-
-    try {
-        const command = new DeleteObjectCommand(input);
-        await S3.send(command);
-        
-        // Check if the delete was successful
-        return true
-    } catch (error) {
-        console.error("Error deleting image from S3: ", error);
-        return false;
-    }
-}
+export { S3, BUCKET_NAME };

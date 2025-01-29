@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 import { verifySession } from "@/lib/dal";
-import { generatePresignedUrl } from "@/lib/s3";
+import { generatePresignedUrl } from "@/lib/s3_funcs";
 
 function generateFilenameWithExtension(set_name: string, original: string): string {
     const extension = original.split('.').pop();
