@@ -1,6 +1,6 @@
 "use client"
 
-import { Set } from "@/lib/queries";
+import { Set } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 
 import Link from "next/link";
@@ -9,10 +9,10 @@ export const columns: ColumnDef<Set>[] = [
     {
         accessorKey: "name",
         header: "Name",
-        cell: ({row}) => {
+        cell: ({ row }) => {
             const set = row.original;
             return (
-                <Link 
+                <Link
                     href={`/set/${set.name}`}
                     className="text-decoration-line"
                 >

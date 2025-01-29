@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     const { images } = await req.json();
     if (!images || !Array.isArray(images) || images.length === 0) {
         return NextResponse.json(
-            {error: "Request body must include an non-empty images array"},
+            { error: "Request body must include an non-empty images array" },
             { status: 400 }
         );
     }
