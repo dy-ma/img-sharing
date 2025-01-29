@@ -1,0 +1,42 @@
+datasource db {
+    provider = "postgresql"
+    url      = env("DB_DATABASE_URL")
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+model User {
+    id            Int     @id @default(autoincrement())
+    email         String
+    password_hash String
+    name          String
+    Set           Set[]
+    Image         Image[]
+}
+
+model Set {
+    id          Int      @id @default(autoincrement())
+    name        String
+    uploader_id Int
+    uploader    User     @relation(fields: [uploader_id], references: [id])
+    created_at  DateTime @default(now())
+    token       String   @default(uuid())
+    Image       Image[]
+}
+
+model Image {
+    id          Int      @id @default(autoincrement())
+    filename    String
+    uploader_id Int
+    uploader    User     @relation(fields: [uploader_id], references: [id])
+    set_id      Int
+    set         Set      @relation(fields: [set_id], references: [id])
+    uploaded_at DateTime @default(now())
+}
+
+model Word {
+    id   Int    @id @default(autoincrement())
+    word String
+}
