@@ -10,8 +10,9 @@ export async function POST(req: NextRequest) {
     }
 
     // Load params
-    const { images } = await req.json();
-    if (!images || !Array.isArray(images) || images.length === 0) {
+    // const { images } = await req.json();
+    const images = await req.json();
+    if (!Array.isArray(images) || images.length === 0) {
         return NextResponse.json(
             { error: "Request body must include an non-empty images array" },
             { status: 400 }

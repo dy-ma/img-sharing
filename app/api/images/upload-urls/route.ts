@@ -22,8 +22,8 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const images = req.json();
-    if (!images || !Array.isArray(images) || images.length === 0) {
+    const images = await req.json();
+    if (!Array.isArray(images) || images.length === 0) {
         return NextResponse.json(
             { error: "Request body must include non-emtpy images array" },
             { status: 400 })
@@ -31,7 +31,14 @@ export async function POST(req: NextRequest) {
 
     // Get presigned urls for each image
     try {
-        const signed_urls = await Promise.all(images.map(presignImage));
+        // const signed_urls = await Promise.all(images.map(presignImage));
+        const signed_urls = await Promise.all(images.map(async image => {
+            const presigned_url = await presignImage(image)
+            return ({
+                ...image,
+                presigned_url: presigned_url
+            })
+        }))
         return NextResponse.json(signed_urls, { status: 200 });
     } catch (error) {
         console.error("Error generating presigned URLS: ", error);
