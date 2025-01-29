@@ -7,13 +7,13 @@ export async function POST(req: NextRequest) {
     // Only verified users can upload sets
     const session = await verifySession();
     if (!session.isAuth) {
-        return new NextResponse(null, { status: 401 })
+        return new NextResponse("Unauthorized", { status: 401 })
     }
 
     // Parse set name
     const { name } = await req.json();
     if (!name) {
-        return new NextResponse(null, { status: 400 })
+        return new NextResponse("Request body must include set name.", { status: 400 })
     }
 
     // Check if name is available

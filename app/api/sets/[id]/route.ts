@@ -5,7 +5,7 @@ import { verifySession } from "@/lib/dal";
 // Get set metadata
 export async function GET(
     req: NextRequest,
-    { params }: { params: Promise<{ id: string}> }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     const id = (await params).id;
     const set = await prisma.set.findUnique({
@@ -15,7 +15,7 @@ export async function GET(
     })
 
     if (!set) {
-        return new NextResponse(null, { status: 404 })
+        return new NextResponse(`No set found with id: ${id}.`, { status: 404 })
     }
 
     return NextResponse.json(set, { status: 200 })
@@ -24,12 +24,12 @@ export async function GET(
 // Delete a set
 export async function DELETE(
     req: NextRequest,
-    { params }: { params: Promise<{ id: string}> }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     // Verify user
     const session = await verifySession();
     if (!session.isAuth) {
-        return new NextResponse(null, { status: 401 });
+        return new NextResponse("Unauthorized", { status: 401 });
     }
 
     // Extract parameters
@@ -45,7 +45,7 @@ export async function DELETE(
 
     // No deletions means this user isn't the set owner
     if (deletedSet.count === 0) {
-        return new NextResponse(null, { status: 403 });
+        return new NextResponse("Sets can only be deleted by the owner.", { status: 403 });
     }
 
     return new NextResponse(null, { status: 200 });
