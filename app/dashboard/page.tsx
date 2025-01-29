@@ -4,17 +4,14 @@ import { Button } from "@/components/ui/button";
 import { columns } from "./columns";
 import { DataTable } from "./datatable";
 import Link from "next/link";
-import { Set, getSets } from "@/app/lib/queries";
-import { verifySession } from "../lib/dal";
+import { Set } from "@/lib/queries";
+import { verifySession } from "../../lib/dal";
 import { Plus } from "lucide-react";
 
 export default async function Dashboard() {
     const session = await verifySession()
 
     let sets: Set[] = []
-    if (session.isAuth) {
-        sets = await getSets(session.userId!);
-    }
 
     return (
         <div className="container mx-auto py-10">

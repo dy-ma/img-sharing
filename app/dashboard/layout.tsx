@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { logout } from "../login/actions"
-import { verifySession } from "../lib/dal"
+import { verifySession } from "../../lib/dal"
 import Link from "next/link";
 
 export default async function DashboardLayout({

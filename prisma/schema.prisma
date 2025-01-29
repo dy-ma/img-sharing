@@ -9,7 +9,7 @@ generator client {
 
 model User {
     id            Int     @id @default(autoincrement())
-    email         String
+    email         String  @unique
     password_hash String
     name          String
     Set           Set[]
@@ -18,7 +18,7 @@ model User {
 
 model Set {
     id          Int      @id @default(autoincrement())
-    name        String
+    name        String   @unique
     uploader_id Int
     uploader    User     @relation(fields: [uploader_id], references: [id])
     created_at  DateTime @default(now())
@@ -28,7 +28,7 @@ model Set {
 
 model Image {
     id          Int      @id @default(autoincrement())
-    filename    String
+    filename    String   @unique
     uploader_id Int
     uploader    User     @relation(fields: [uploader_id], references: [id])
     set_id      Int
@@ -38,5 +38,5 @@ model Image {
 
 model Word {
     id   Int    @id @default(autoincrement())
-    word String
+    word String @unique
 }

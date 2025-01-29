@@ -1,7 +1,7 @@
 "use server"
 
 import { NextResponse } from "next/server";
-import { generateAvailableSetName } from "@/app/lib/queries";
+import { generateAvailableSetName } from "@/lib/queries";
 
 export async function GET() {
   const name = await generateAvailableSetName();

@@ -1,6 +1,6 @@
 "use client"
 
-import { Set } from "@/app/lib/queries";
+import { Set } from "@/lib/queries";
 import { ColumnDef } from "@tanstack/react-table";
 
 import Link from "next/link";

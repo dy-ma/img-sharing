@@ -1,5 +1,5 @@
-import { verifySession } from "@/app/lib/dal";
-import { Image, addImagesToSet } from "@/app/lib/queries";
+import { verifySession } from "@/lib/dal";
+import { Image, addImagesToSet } from "@/lib/queries";
 import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {

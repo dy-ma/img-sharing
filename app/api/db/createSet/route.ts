@@ -1,8 +1,8 @@
 "use server"
 
-import { createSet } from "@/app/lib/queries";
+import { createSet } from "@/lib/queries";
 import { NextRequest, NextResponse } from "next/server";
-import { verifySession } from "@/app/lib/dal";
+import { verifySession } from "@/lib/dal";
 
 export async function POST(req: NextRequest) {
     const session = await verifySession();

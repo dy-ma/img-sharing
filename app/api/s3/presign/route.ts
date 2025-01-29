@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
-import { verifySession } from "@/app/lib/dal";
-import { generatePresignedUrl } from "@/app/lib/s3";
+import { verifySession } from "@/lib/dal";
+import { generatePresignedUrl } from "@/lib/s3";
 
 function generateFilenameWithExtension(set_name: string, original: string): string {
     const extension = original.split('.').pop();
