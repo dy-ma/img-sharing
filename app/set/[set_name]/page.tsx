@@ -3,8 +3,24 @@ import { prisma } from "@/lib/db";
 import QrDisplay from "./QrDisplay";
 import Link from "next/link";
 import LoginButton from "@/components/LoginButton";
-import ImageGrid from "@/components/ImageGrid";
-import { R2_API } from "@/lib/s3";
+import { BUCKET_NAME, R2_API, S3 } from "@/lib/s3";
+import type { Image, Set } from "@prisma/client";
+import { GetObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import ImageGrid from "./ImageGrid";
+
+async function presignImage(set: Set, image: Image) {
+    const command = new GetObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: `${set.name}/${image.filename}`,
+    });
+
+    const signed_url = await getSignedUrl(S3, command);
+    return {
+        ...image,
+        presigned_url: signed_url
+    };
+}
 
 export default async function SetPage({
     params,
@@ -50,9 +66,19 @@ export default async function SetPage({
 
     const images = await prisma.image.findMany({
         where: {
-            set_id: Number(set.id)
+            set_id: set.id
         }
     })
+
+    if (!images || !Array.isArray(images) || images.length === 0) {
+        return (
+            <div className="grid place-items-center w-full min-h-screen">
+                <h1 className="text-4xl">403 - Forbidden</h1>
+            </div>
+        )
+    }
+
+    const presigned_urls = await Promise.all(images.map(image => presignImage(set, image)))
 
     return (
         <>
@@ -63,12 +89,12 @@ export default async function SetPage({
                 <LoginButton />
             </header>
             <div className="flex flex-col w-full min-h-screen p-4 pt-20 sm:px-10">
-                <div className="flex flex-col justify-between sm:flex-row sm:items-center h-32">
+                <div className="flex flex-col justify-between sm:flex-row sm:items-center">
                     <h1 className="text-4xl font-bold mb-2">{set.name}</h1>
                     <QrDisplay set={set} />
                 </div>
+                <ImageGrid presigned_urls={presigned_urls} />
             </div>
-            <ImageGrid s3_path={s3_path} set={set} images={images} />
         </>
     )
 }
