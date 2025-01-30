@@ -70,20 +70,12 @@ export default async function SetPage({
         }
     })
 
-    if (!images || !Array.isArray(images) || images.length === 0) {
-        return (
-            <div className="grid place-items-center w-full min-h-screen">
-                <h1 className="text-4xl">403 - Forbidden</h1>
-            </div>
-        )
-    }
-
     const presigned_urls = await Promise.all(images.map(image => presignImage(set, image)))
 
     return (
         <>
             <header className="flex justify-between p-4">
-                <Link href="/">
+                <Link href="/dashboard">
                     <h1 className="text-xl font-semibold">ImgShare</h1>
                 </Link>
                 <LoginButton />

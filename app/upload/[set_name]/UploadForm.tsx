@@ -150,6 +150,7 @@ export default function UploadForm({ set }: { set: Set }) {
         })
 
         // Successful post response
+        await new Promise(r => setTimeout(r, 1000));
         router.push(`/set/${set.name}`);
     }
 
