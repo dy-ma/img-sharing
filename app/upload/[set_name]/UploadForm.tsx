@@ -113,7 +113,7 @@ export default function UploadForm({ set }: { set: Set }) {
 
         updateProgress(0);
         let num_images_uploaded = 0;
-        let num_images_to_upload = upload_urls.length;
+        const num_images_to_upload = upload_urls.length;
 
         // We upload and update each image as an atomic operation to prevent dangling references
         upload_urls.map(async (image, i) => {
@@ -172,7 +172,7 @@ export default function UploadForm({ set }: { set: Set }) {
             title: "Uh oh! Something went wrong.",
             description: error
         });
-    }, [error])
+    }, [error, toast])
 
     return (
         <div>

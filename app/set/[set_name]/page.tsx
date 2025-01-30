@@ -3,11 +3,13 @@ import { prisma } from "@/lib/db";
 import QrDisplay from "./QrDisplay";
 import Link from "next/link";
 import LoginButton from "@/components/LoginButton";
-import { BUCKET_NAME, R2_API, S3 } from "@/lib/s3";
+import { BUCKET_NAME, S3 } from "@/lib/s3";
 import type { Image, Set } from "@prisma/client";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import ImageGrid from "./ImageGrid";
+import SetInfoDisplay from "./SetInfoDisplay";
+import DeleteConfirmDialog from "./DeleteConfirmDialog";
 
 async function presignImage(set: Set, image: Image) {
     const command = new GetObjectCommand({
@@ -40,8 +42,6 @@ export default async function SetPage({
             name: set_name
         }
     })
-
-    const s3_path = R2_API!;
 
     if (!set || (!session.isAuth && !token)) {
         return (
@@ -89,12 +89,16 @@ export default async function SetPage({
                 <LoginButton />
             </header>
             <div className="flex flex-col w-full min-h-screen p-4 pt-20 sm:px-10">
-                <div className="flex flex-col justify-between sm:flex-row sm:items-center">
-                    <h1 className="text-4xl font-bold mb-2">{set.name}</h1>
-                    <QrDisplay set={set} />
+                <div className="flex flex-col justify-between md:flex-row sm:items-center">
+                    <h1 className="text-4xl font-bold m-4">{set.name}</h1>
+                    <div className="sm:flex rounded-md p-4 mb-4 bg-secondary">
+                        <QrDisplay set={set} />
+                        <SetInfoDisplay set={set} />
+                    </div>
                 </div>
                 <ImageGrid presigned_urls={presigned_urls} />
             </div>
+            <DeleteConfirmDialog set={set} />
         </>
     )
 }

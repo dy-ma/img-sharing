@@ -45,7 +45,7 @@ export default function ImageGrid({ presigned_urls }: ImageGridProps) {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {presigned_urls.map((image, index) => (
                     <div
-                        key={image.id}
+                        key={index}
                         className="aspect-square overflow-hidden rounded-lg cursor-pointer"
                         onClick={() => openImage(image.presigned_url)}
                     >

@@ -12,7 +12,7 @@ export default function QrDisplay({ set }: { set: Set }) {
 
     return (
         // Add a border
-        <div className="border-primary rounded-lg p-2 shadow-md bg-white border-4 m-4">
+        <div className="border-primary rounded-lg p-2 shadow-md bg-white border-4 m-1">
             <QRCodeSVG value={`${baseUrl}/set/${set.name}`} className="w-full h-auto" />
         </div>
     )
