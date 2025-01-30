@@ -1,9 +1,9 @@
 "use server";
 import { z } from "zod";
-import { createSession, deleteSession } from "../lib/session";
+import { createSession, deleteSession } from "../../lib/session";
 import { redirect } from "next/navigation";
-import { neon } from "@neondatabase/serverless";
 import bcrypt from "bcryptjs";
+import { prisma } from "@/lib/db";
 
 const loginSchema = z.object({
     email: z.string().email({ message: "Invalid email address"}).trim(),
@@ -24,20 +24,21 @@ export async function login(prevState: any, formData: FormData) {
 
     const {email, password} = result.data;
 
-    const sql = neon(`${process.env.DB_DATABASE_URL}`);
-    const response = await sql("SELECT id, name, password_hash FROM users WHERE email = ($1)", [email]);
+    const user = await prisma.user.findUnique({
+        where: {
+            email: email
+        }
+    })
 
-    if (response.length === 0) {
+    if (!user) {
         return {
             errors: {
-                email: ["User not found"],
+                email: [`No account found with email: ${email}`],
             }
-        };
+        }
     }
 
-    const db_user_record = response[0];
-
-    const match = await bcrypt.compare(password, db_user_record.password_hash);
+    const match = await bcrypt.compare(password, user.password_hash);
 
     if (!match) {
         return {
@@ -47,7 +48,7 @@ export async function login(prevState: any, formData: FormData) {
         };
     }
 
-    await createSession(db_user_record.id);
+    await createSession(String(user.id));
 
     redirect("/dashboard");
 }

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { logout } from "../login/actions"
-import { verifySession } from "../lib/dal"
+import { verifySession } from "../../lib/dal"
 import Link from "next/link";
 
 export default async function DashboardLayout({
@@ -12,7 +12,7 @@ export default async function DashboardLayout({
     return (
         <div>
             <header className="flex justify-between p-4">
-                <Link href="/">
+                <Link href="/dashboard">
                     <h1 className="text-xl font-semibold">ImgShare</h1>
                 </Link>
                 {session.isAuth == true ?
